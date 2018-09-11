@@ -1,0 +1,57 @@
+sudo: false
+language: python
+python:
+  - "3.7-dev"
+virtualenv:
+  system_site_packages: false
+notifications:
+  email: false
+git:
+  depth: 5
+cache:
+  directories:
+    - $HOME/virtualenv
+stages:
+  - Setup
+  - Check
+  - Test
+jobs:
+  include:
+
+    - stage: Setup
+      name: Setup
+      install:
+        - travis_wait make install-deps
+        - travis_wait make install-dev
+      script:
+        - python --version
+        - pip --version
+        - pip list
+
+    - stage: Check
+      name: PEP8
+      script: make pep8-check
+
+    - stage: Check
+      name: PEP257
+      script: make pep257-check
+
+    - stage: Check
+      name: Lint
+      script: make lint-check
+
+    - stage: Check
+      name: Security
+      script: make security-check
+
+    - stage: Test
+      name: UnitTest
+      script: make test
+
+    - stage: Test
+      name: Coverage
+      script: make coverage || true
+
+    - stage: Test
+      name: Bench
+      script: make bench || true
